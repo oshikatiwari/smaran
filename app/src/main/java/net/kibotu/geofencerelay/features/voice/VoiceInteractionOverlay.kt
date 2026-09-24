@@ -73,6 +73,9 @@ fun VoiceInteractionOverlay(
     var isExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(voiceManager, languageCode) {
+        // Automatically activate ambient wake-word listener on screen load
+        voiceManager.startWakeWordListening(context, languageCode)
+
         voiceManager.onWakeWordTriggered = {
             isExpanded = true
             val greeting = when (languageCode) {
@@ -82,7 +85,17 @@ fun VoiceInteractionOverlay(
                 "kha" -> "Hooid, nga don bad phi. Kumno nga lah ban iarap?"
                 else -> "Yes, I am right here with you. How can I help you today?"
             }
-            voiceManager.speak(greeting, languageCode)
+            voiceManager.speak(greeting, languageCode) {
+                // Seamlessly start listening for user's voice command after greeting finishes!
+                startListeningWithHandler(
+                    context = context,
+                    mode = mode,
+                    languageCode = languageCode,
+                    voiceManager = voiceManager,
+                    onPatientNavigate = onPatientNavigate,
+                    onCaregiverAction = onCaregiverAction
+                )
+            }
         }
     }
 

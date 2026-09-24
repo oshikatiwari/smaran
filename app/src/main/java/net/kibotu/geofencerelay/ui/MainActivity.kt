@@ -23,6 +23,10 @@ class MainActivity : ComponentActivity() {
         NotificationHelper.createNotificationChannels(this)
         net.kibotu.geofencerelay.features.ai.reminder.GameReminderManager.ensureAlarmScheduled(this)
 
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 2001)
+        }
+
         setContent {
             GeofenceRelayTheme {
                 val context = this

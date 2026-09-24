@@ -85,11 +85,12 @@ data class GameSessionMetrics(
 @Composable
 fun BrainExerciseGamePanel(
     selectedLanguageCode: String,
+    initialGameMode: ActiveGameMode = ActiveGameMode.HUB,
     onAssessmentUpdated: (CpsAssessmentResult) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    var activeMode by remember { mutableStateOf(ActiveGameMode.HUB) }
+    var activeMode by remember(initialGameMode) { mutableStateOf(initialGameMode) }
 
     when (activeMode) {
         ActiveGameMode.HUB -> {
@@ -830,6 +831,8 @@ private fun FullScreenMemoryMatchingGameView(
 
                         // Persist to Lifetime Daily Scorecard
                         val scorecard = DailyScorecardItem(
+                            deviceId = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceId(context),
+                            deviceName = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceName(),
                             dateFormatted = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()).format(Date()),
                             dayKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
                             gameType = "Memory Matching",
@@ -1221,6 +1224,8 @@ private fun FullScreenPatternSequenceGameView(
 
                                                 // Record Daily Scorecard
                                                 val scorecard = DailyScorecardItem(
+                                                    deviceId = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceId(context),
+                                                    deviceName = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceName(),
                                                     dateFormatted = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()).format(Date()),
                                                     dayKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
                                                     gameType = "Pattern Sequence",
@@ -1397,6 +1402,8 @@ private fun ColorStroopChallengeGameView(
 
                 // Record Daily Scorecard
                 val scorecard = DailyScorecardItem(
+                    deviceId = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceId(context),
+                    deviceName = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceName(),
                     dateFormatted = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()).format(Date()),
                     dayKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
                     gameType = "Stroop Challenge",
@@ -1702,6 +1709,8 @@ private fun AscendingTrailMakingGameView(
 
                                                 // Record Daily Scorecard
                                                 val scorecard = DailyScorecardItem(
+                                                    deviceId = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceId(context),
+                                                    deviceName = net.kibotu.geofencerelay.service.TrackerForegroundService.getDeviceName(),
                                                     dateFormatted = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()).format(Date()),
                                                     dayKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
                                                     gameType = "Trail Making",

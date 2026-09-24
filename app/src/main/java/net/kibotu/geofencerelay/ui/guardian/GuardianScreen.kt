@@ -1,4 +1,4 @@
-﻿package net.kibotu.geofencerelay.ui.guardian
+package net.kibotu.geofencerelay.ui.guardian
 
 import android.Manifest
 import android.content.Context
@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import net.kibotu.geofencerelay.features.voice.CaregiverVoiceAction
+import net.kibotu.geofencerelay.features.voice.VoiceAssistantMode
+import net.kibotu.geofencerelay.features.voice.VoiceInteractionOverlay
 import net.kibotu.geofencerelay.ui.theme.*
 import net.kibotu.geofencerelay.util.LocationUtils
 
@@ -78,11 +82,20 @@ fun GuardianScreen(
     val broadcastSuccess by vm.broadcastSuccess.collectAsState()
     val recenterTrigger by vm.recenterTrigger.collectAsState()
     val isPlayingSound by vm.isPlayingSound.collectAsState()
+    val latestScorecard by vm.latestScorecard.collectAsState()
+    val scorecardsHistory by vm.scorecardsHistory.collectAsState()
 
     var showZoneEditor by remember { mutableStateOf(false) }
+    var showScorecardDialog by remember { mutableStateOf(false) }
     var sliderRadius by remember(zone.radiusMeters) {
         mutableFloatStateOf(zone.radiusMeters.toFloat().coerceIn(50f, 2000f))
     }
+
+    val appPrefs = remember { context.getSharedPreferences("app_settings", Context.MODE_PRIVATE) }
+    var selectedLanguageCode by remember {
+        mutableStateOf(appPrefs.getString("selected_language", "en") ?: "en")
+    }
+    var showLanguageMenu by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -91,55 +104,97 @@ fun GuardianScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(NerColors.Primary),
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFFEA580C)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 "S",
                                 color = Color.White,
                                 fontWeight = FontWeight.Black,
-                                fontSize = 18.sp
+                                fontSize = 20.sp
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                "Smaran Sentinel Guardian",
-                                fontSize = 18.sp,
+                                "SMARAN GUARDIAN",
+                                fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF111827)
                             )
                             Text(
-                                googleAccountEmail,
-                                fontSize = 12.sp,
-                                color = NerColors.Marigold
+                                "Where Memories Meet Care",
+                                fontSize = 11.sp,
+                                color = Color(0xFFEA580C)
                             )
                         }
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color(0xFF111827))
                     }
                 },
                 actions = {
+                    // Language Switcher Dropdown Button
+                    Box {
+                        TextButton(
+                            onClick = { showLanguageMenu = true },
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = when (selectedLanguageCode) {
+                                    "hi" -> "हिंदी"
+                                    "as" -> "অসমীয়া"
+                                    "lus" -> "Mizo"
+                                    "kha" -> "Khasi"
+                                    else -> "English"
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2563EB)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showLanguageMenu,
+                            onDismissRequest = { showLanguageMenu = false }
+                        ) {
+                            listOf(
+                                "en" to "English",
+                                "hi" to "हिंदी (Hindi)",
+                                "as" to "অসমীয়া (Assamese)",
+                                "lus" to "Mizo",
+                                "kha" to "Khasi"
+                            ).forEach { (code, label) ->
+                                DropdownMenuItem(
+                                    text = { Text(label, fontWeight = if (code == selectedLanguageCode) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedLanguageCode = code
+                                        appPrefs.edit().putString("selected_language", code).commit()
+                                        showLanguageMenu = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     // Online / Connecting Indicator
                     Box(
                         modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (isConnected) NerColors.Secondary else NerColors.Crimson)
+                            .padding(end = 4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isConnected) Color(0xFF16A34A).copy(alpha = 0.15f) else Color(0xFFDC2626).copy(alpha = 0.15f))
                             .clickable { vm.reconnect() }
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = if (isConnected) "LIVE RADAR" else "CONNECTING... (TAP)",
+                            text = if (isConnected) "● LIVE RADAR" else "CONNECTING...",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            letterSpacing = 0.5.sp
+                            color = if (isConnected) Color(0xFF16A34A) else Color(0xFFDC2626)
                         )
                     }
 
@@ -148,10 +203,10 @@ fun GuardianScreen(
                         context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
                         onSignOut()
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Sign Out", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Sign Out", tint = Color(0xFF4B5563))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = NerColors.PrimaryDark)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         }
     ) { padding ->
@@ -159,7 +214,7 @@ fun GuardianScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(NerColors.CanvasWarm)
+                .background(Color(0xFFF8F9FA))
         ) {
             // Top Woven Ribbon
             NerWovenRibbon(
@@ -341,7 +396,55 @@ fun GuardianScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Caregiver Voice Assistant Console
+                    VoiceInteractionOverlay(
+                        mode = VoiceAssistantMode.CAREGIVER,
+                        languageCode = selectedLanguageCode,
+                        modifier = Modifier.padding(bottom = 6.dp),
+                        onCaregiverAction = { action ->
+                            when (action) {
+                                is CaregiverVoiceAction.RecenterRadar -> {
+                                    vm.triggerRecenter()
+                                }
+                                is CaregiverVoiceAction.OpenDirections -> {
+                                    targetPing?.let { ping ->
+                                        val uri = "google.navigation:q=${ping.latitude},${ping.longitude}"
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
+                                            setPackage("com.google.android.apps.maps")
+                                        }
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (_: Exception) {
+                                            val webUri = "https://www.google.com/maps/dir/?api=1&destination=${ping.latitude},${ping.longitude}"
+                                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(webUri)))
+                                        }
+                                    }
+                                }
+                                is CaregiverVoiceAction.ToggleSafeZone -> {
+                                    showZoneEditor = !showZoneEditor
+                                }
+                                is CaregiverVoiceAction.PlayAlarm -> {
+                                    vm.playSound()
+                                }
+                                is CaregiverVoiceAction.StopAlarm -> {
+                                    vm.stopSound()
+                                }
+                                is CaregiverVoiceAction.OpenScorecards -> {
+                                    showScorecardDialog = true
+                                }
+                                is CaregiverVoiceAction.CallPatient -> {
+                                    try {
+                                        context.startActivity(Intent(Intent.ACTION_DIAL))
+                                    } catch (_: Exception) {}
+                                }
+                                is CaregiverVoiceAction.SpokenFeedback -> {}
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // 4 Interactive Action Tiles
                     Row(
@@ -433,7 +536,34 @@ fun GuardianScreen(
                             Text("Safe Zone", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = NerColors.Charcoal)
                         }
 
-                        // 4. Recenter & Sync
+                        // 4. Cognitive Scorecard
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    showScorecardDialog = true
+                                }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .background(if (latestScorecard != null) NerColors.Tertiary else NerColors.NeutralMedium),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Psychology, contentDescription = "Scorecard", tint = Color.White)
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                if (latestScorecard != null) "${latestScorecard!!.cpsScore.toInt()} CPS" else "Scorecard",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = NerColors.Charcoal
+                            )
+                        }
+
+                        // 5. Recenter & Sync
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -453,6 +583,133 @@ fun GuardianScreen(
                             }
                             Spacer(modifier = Modifier.height(6.dp))
                             Text("Center Radar", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = NerColors.Charcoal)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Patient Cognitive Telemetry Card (Live MQTT Telemetry from Tracker)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showScorecardDialog = true },
+                        colors = CardDefaults.cardColors(containerColor = NerColors.CanvasWarm),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, NerColors.NeutralBorder)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(34.dp)
+                                            .clip(CircleShape)
+                                            .background(NerColors.Tertiary),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Psychology,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            "Cognitive Telemetry & Scorecard",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = NerColors.Charcoal
+                                        )
+                                        Text(
+                                            if (latestScorecard != null) "${latestScorecard!!.gameType} • Level: ${latestScorecard!!.difficulty}" else "Awaiting daily brain exercises...",
+                                            fontSize = 11.sp,
+                                            color = NerColors.NeutralMedium
+                                        )
+                                    }
+                                }
+
+                                if (latestScorecard != null) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(NerColors.Tertiary)
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            "${latestScorecard!!.cpsScore.toInt()} CPS",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (latestScorecard != null) {
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                if (latestScorecard!!.caregiverSummary.isNotBlank()) {
+                                    Text(
+                                        text = latestScorecard!!.caregiverSummary,
+                                        fontSize = 12.sp,
+                                        color = NerColors.Charcoal,
+                                        lineHeight = 16.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    ScoreSubMetric("Memory", "${latestScorecard!!.memoryRetention.toInt()}%", NerColors.Secondary)
+                                    ScoreSubMetric("Reaction", "${latestScorecard!!.reactionLatency.toInt()}%", NerColors.Marigold)
+                                    ScoreSubMetric("Executive", "${latestScorecard!!.executiveFunction.toInt()}%", NerColors.Tertiary)
+                                    ScoreSubMetric("Accuracy", "${(latestScorecard!!.accuracy * 100).toInt()}%", NerColors.Primary)
+                                }
+
+                                if (latestScorecard!!.anomalyDetected) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(NerColors.Crimson.copy(alpha = 0.15f))
+                                            .padding(8.dp)
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.Warning, contentDescription = null, tint = NerColors.Crimson, modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                "Acute Drop Alert: Performance deviation detected",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = NerColors.Crimson
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Text(
+                                        "View Detailed History (${scorecardsHistory.size}) →",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = NerColors.Tertiary
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -544,6 +801,173 @@ fun GuardianScreen(
                     }
                 }
             }
+
+            // Cognitive Health & Scorecards Detailed History Dialog
+            if (showScorecardDialog) {
+                AlertDialog(
+                    onDismissRequest = { showScorecardDialog = false },
+                    title = {
+                        Column {
+                            NerWovenRibbon(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 6.dp),
+                                height = 10.dp,
+                                primaryColor = NerColors.Tertiary,
+                                secondaryColor = NerColors.Primary
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                        .background(NerColors.Tertiary),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.Psychology, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Patient Cognitive Health", fontWeight = FontWeight.Bold, fontSize = 17.sp, color = NerColors.Charcoal)
+                            }
+                        }
+                    },
+                    text = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 440.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            if (latestScorecard == null) {
+                                Text(
+                                    "No cognitive scorecards received yet.\n\nWhen the patient plays brain exercises on their phone, live telemetry and daily scorecards will sync here automatically over MQTT.",
+                                    fontSize = 13.sp,
+                                    color = NerColors.NeutralMedium,
+                                    lineHeight = 18.sp
+                                )
+                            } else {
+                                // Latest Session Card
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = NerColors.CanvasIvory),
+                                    shape = RoundedCornerShape(12.dp),
+                                    border = BorderStroke(1.dp, NerColors.NeutralBorder)
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text(
+                                                    "${latestScorecard!!.gameType} (${latestScorecard!!.difficulty})",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    color = NerColors.Charcoal
+                                                )
+                                                Text(latestScorecard!!.dateFormatted, fontSize = 11.sp, color = NerColors.NeutralMedium)
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(NerColors.Tertiary)
+                                                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                                            ) {
+                                                Text("${latestScorecard!!.cpsScore.toInt()} CPS", fontWeight = FontWeight.Black, fontSize = 14.sp, color = Color.White)
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        if (latestScorecard!!.caregiverSummary.isNotBlank()) {
+                                            Text(
+                                                "Caregiver Summary: ${latestScorecard!!.caregiverSummary}",
+                                                fontSize = 12.sp,
+                                                color = NerColors.Charcoal,
+                                                lineHeight = 16.sp
+                                            )
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text("Memory: ${latestScorecard!!.memoryRetention.toInt()}%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NerColors.Secondary)
+                                            Text("Reaction: ${latestScorecard!!.reactionLatency.toInt()}%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NerColors.Marigold)
+                                            Text("Executive: ${latestScorecard!!.executiveFunction.toInt()}%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NerColors.Tertiary)
+                                            Text("Accuracy: ${(latestScorecard!!.accuracy * 100).toInt()}%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NerColors.Primary)
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    "Session History (${scorecardsHistory.size} recorded)",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    color = NerColors.Charcoal
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                scorecardsHistory.forEach { card ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp),
+                                        colors = CardDefaults.cardColors(containerColor = NerColors.SurfaceWhite),
+                                        shape = RoundedCornerShape(10.dp),
+                                        border = BorderStroke(1.dp, NerColors.NeutralBorder)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(10.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text("${card.gameType} (${card.difficulty})", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = NerColors.Charcoal)
+                                                Text(card.dateFormatted, fontSize = 10.sp, color = NerColors.NeutralMedium)
+                                                if (card.caregiverSummary.isNotBlank()) {
+                                                    Text(card.caregiverSummary, fontSize = 10.sp, color = NerColors.NeutralMedium, maxLines = 1)
+                                                }
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(6.dp))
+                                                    .background(NerColors.Tertiary.copy(alpha = 0.15f))
+                                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                            ) {
+                                                Text("${card.cpsScore.toInt()} CPS", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = NerColors.Tertiary)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = { showScorecardDialog = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = NerColors.Primary),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("Close", color = Color.White)
+                        }
+                    },
+                    containerColor = NerColors.SurfaceWhite,
+                    shape = RoundedCornerShape(20.dp)
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun ScoreSubMetric(label: String, value: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp, color = color)
+        Text(label, fontSize = 10.sp, color = NerColors.NeutralMedium)
     }
 }

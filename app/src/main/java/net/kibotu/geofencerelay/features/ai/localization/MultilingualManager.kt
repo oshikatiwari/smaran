@@ -726,13 +726,22 @@ object MultilingualManager {
 
         // App header & subtitle
         "app_title" to mapOf(
-            "en" to "Smaran",
-            "hi" to "स्मरण (Smaran)",
-            "as" to "স্মৰণ (Smaran)",
-            "lus" to "Smaran Hriatna",
-            "kha" to "Smaran Jingkynmaw",
-            "mni" to "স্মরণ (Smaran)",
-            "nag" to "Smaran Dimag"
+            "en" to "SMARAN",
+            "hi" to "SMARAN",
+            "as" to "SMARAN",
+            "lus" to "SMARAN",
+            "kha" to "SMARAN",
+            "mni" to "SMARAN",
+            "nag" to "SMARAN"
+        ),
+        "app_tagline" to mapOf(
+            "en" to "Where Memories Meet Care",
+            "hi" to "Where Memories Meet Care",
+            "as" to "Where Memories Meet Care",
+            "lus" to "Where Memories Meet Care",
+            "kha" to "Where Memories Meet Care",
+            "mni" to "Where Memories Meet Care",
+            "nag" to "Where Memories Meet Care"
         ),
         "beacon_live" to mapOf(
             "en" to "Live Beacon Active",
@@ -753,33 +762,33 @@ object MultilingualManager {
             "nag" to "Beacon Standby Ase"
         ),
 
-        // Tile 1: GPS Beacon
+        // Tile 1: GPS / Location
         "tile_gps_title" to mapOf(
-            "en" to "GPS Beacon",
-            "hi" to "जीपीएस बीकन",
-            "as" to "জি.পি.এছ. বিকন",
-            "lus" to "GPS Hmun Zawnna",
-            "kha" to "Ka Jingbuh Hmun GPS",
-            "mni" to "GPS মফম তাকপা",
-            "nag" to "GPS Beacon Jagah"
+            "en" to "My Location",
+            "hi" to "मेरा स्थान",
+            "as" to "মোৰ অৱস্থান",
+            "lus" to "Ka Hmun Zawnna",
+            "kha" to "Ka Hmun Jong Nga",
+            "mni" to "ঐগী মফম",
+            "nag" to "Moi laga Jagah"
         ),
         "tile_gps_sub_broadcasting" to mapOf(
-            "en" to "Transmitting Live",
-            "hi" to "लाइव प्रसारण चालू",
-            "as" to "লাইভ প্ৰেৰণ চলিছে",
-            "lus" to "Thawn Mek A Ni",
-            "kha" to "Phah Jingtip Mynta",
-            "mni" to "লাইভ ত্রান্সমিৎ তৌরি",
-            "nag" to "Live Bheji Ase"
+            "en" to "Safe & Connected",
+            "hi" to "सुरक्षित एवं जुड़ा हुआ",
+            "as" to "সুৰক্ষিত আৰু সংযোগী",
+            "lus" to "Him Takin A Awm",
+            "kha" to "Shngiam & Iasoh",
+            "mni" to "সেফ অমসুং শম্নরে",
+            "nag" to "Safe aru Connect Ase"
         ),
         "tile_gps_sub_standby" to mapOf(
-            "en" to "Tap to Broadcast",
-            "hi" to "प्रसारण हेतु टैप करें",
-            "as" to "প্ৰেৰণ কৰিবলৈ টিপক",
-            "lus" to "Thawn Tan Nan Hmet",
-            "kha" to "Kyntuit Ban Phah",
-            "mni" to "শন্দোক্নবা নম্বিয়ু",
-            "nag" to "Chalu Kuribo Karone Dababi"
+            "en" to "Resting at Home",
+            "hi" to "घर पर विश्राम",
+            "as" to "ঘৰত বিশ্ৰাম",
+            "lus" to "In lamah Awm",
+            "kha" to "Shong Thait Ha Iing",
+            "mni" to "য়ুমদা লৈরে",
+            "nag" to "Ghar te Ase"
         ),
 
         // Tile 2: Brain Games
@@ -793,62 +802,62 @@ object MultilingualManager {
             "nag" to "Dimag laga Khel"
         ),
         "tile_games_sub" to mapOf(
-            "en" to "2 Cognitive Modes",
-            "hi" to "२ संज्ञानात्मक खेल",
-            "as" to "২টা মগজুৰ অনুশীলন",
-            "lus" to "Infiamna Chi 2",
-            "kha" to "Ar Tylli Ki Jingialehkai",
-            "mni" to "মখল অনি শান্নবা",
-            "nag" to "2 Ta Khel Ase"
+            "en" to "Fun Memory Puzzles",
+            "hi" to "रोचक स्मृति पहेलियाँ",
+            "as" to "মনোৰম সোঁৱৰণি খেল",
+            "lus" to "Hriatrengna Infiamna",
+            "kha" to "Ki Jingialehkai Jingkynmaw",
+            "mni" to "নীংশিংবা শান্নবা",
+            "nag" to "Yaad laga Khel"
         ),
 
         // Tile 3: Cognitive Score
         "tile_score_title" to mapOf(
-            "en" to "Cognitive Health",
-            "hi" to "संज्ञानात्मक स्वास्थ्य",
-            "as" to "মগজুৰ স্বাস্থ্য",
-            "lus" to "Hriatna Hriselna",
-            "kha" to "Ka Koit Ka Khiah Jingmut",
-            "mni" to "ৱাখলগী হকশেল",
-            "nag" to "Dimag laga Health"
+            "en" to "My Progress",
+            "hi" to "मेरी प्रगति",
+            "as" to "মোৰ অগ্ৰগতি",
+            "lus" to "Ka Hmasawnna",
+            "kha" to "Ka Jingiaid Shaphrang",
+            "mni" to "ঐগী চাউখৎলকপা",
+            "nag" to "Moi laga Progress"
         ),
         "tile_score_sub_untested" to mapOf(
-            "en" to "Play Game to Assess",
-            "hi" to "स्कोर हेतु खेल खेलें",
-            "as" to "স্ক'ৰৰ বাবে খেল খেলক",
-            "lus" to "Zir Chian Nan Infiam",
-            "kha" to "Lehkai Ban Pynshai",
-            "mni" to "স্কোরগীদমক শান্নবিয়ু",
-            "nag" to "Score Karone Khelibi"
+            "en" to "Play a Game to See",
+            "hi" to "देखने के लिए खेलें",
+            "as" to "চাবলৈ খেল খেলক",
+            "lus" to "En nan Infiam rawh",
+            "kha" to "Lehkai Ban Iohi",
+            "mni" to "য়েংনবা শান্নবিয়ু",
+            "nag" to "Sabi Karone Khelibi"
         ),
         "tile_score_sub_tested" to mapOf(
-            "en" to "Assessment Ready",
-            "hi" to "आकलन तैयार",
-            "as" to "মূল্যায়ন প্ৰস্তুত",
-            "lus" to "Endikna A Kim",
-            "kha" to "La Dep Ka Jingbishar",
-            "mni" to "য়েংশিনবা লোইরে",
-            "nag" to "Score Ahi Jaise"
+            "en" to "Memory is Bright",
+            "hi" to "स्मृति सक्रिय है",
+            "as" to "সোঁৱৰণি সক্ৰিয়",
+            "lus" to "Hriatrengna A Tha",
+            "kha" to "Ka Jingkynmaw Ka Bha",
+            "mni" to "নীংশিংবা ফরে",
+            "nag" to "Yaad Bhal Ase"
         ),
 
         // Tile 4: Safety Alerts
         "tile_safety_title" to mapOf(
-            "en" to "Safety & Alerts",
-            "hi" to "सुरक्षा एवं अलर्ट",
-            "as" to "সুৰক্ষা আৰু সতৰ্কতা",
-            "lus" to "Venhimna & Hriattirna",
-            "kha" to "Ka Jingiada & Jingma",
-            "mni" to "য়াম্না কনবা চেকশিনবা",
-            "nag" to "Safety aru Alert"
+            "en" to "Help & Safe Home",
+            "hi" to "मदद व सुरक्षित घर",
+            "as" to "সহায় আৰু সুৰক্ষিত ঘৰ",
+            "lus" to "Puihna & In Him",
+            "kha" to "Ka Jingiarap & Iing Shngiam",
+            "mni" to "মতেং অমসুং সেফ য়ুম",
+            "nag" to "Mothot aru Safe Ghar"
         ),
         "tile_safety_sub" to mapOf(
-            "en" to "Sundowning & Safe Zone",
-            "hi" to "संध्या सिंड्रोम व सुरक्षित घेरा",
-            "as" to "সন্ধ্যা সতর্কতা ও সুৰক্ষিত বলয়",
-            "lus" to "Tlailam & Hmun Him",
-            "kha" to "Jingpeit Syngam & Hmun Bha",
-            "mni" to "নুমিদাং চেকশিনবা মফম",
-            "nag" to "Shaam laga Alert aru Safe Zone"
+            "en" to "Take Me Home & SOS",
+            "hi" to "घर ले चलो और एसओएस",
+            "as" to "ঘৰলৈ ব'লক আৰু জৰুৰী সহায়",
+            "lus" to "Inah Min Hruai & SOS",
+            "kha" to "Wallam Sha Iing & SOS",
+            "mni" to "য়ুমদা পুখৎলু অমসুং SOS",
+            "nag" to "Ghar Loi Jabi aru SOS"
         ),
 
         // Tile 5: Voice & Languages
@@ -1492,6 +1501,153 @@ object MultilingualManager {
             "kha" to "10 minit pynsangeh",
             "mni" to "মিনিত ১০ তুংদা নিংশিংবিয়ু",
             "nag" to "10 minute pise yaad dibi"
+        ),
+        "tour_card_title" to mapOf(
+            "en" to "Welcome to Smaran Guided Tour",
+            "hi" to "स्मरण ध्वनि मार्गदर्शिका में आपका स्वागत है",
+            "as" to "স্মৰণ পথ-প্ৰদৰ্শন ভ্ৰমণলৈ স্বাগতম",
+            "lus" to "Smaran Aw Hruaina Inhmelhriattirna",
+            "kha" to "Ka Jingpynshai Smaran ha ka Ktien"
+        ),
+        "tour_card_desc" to mapOf(
+            "en" to "Listen to a gentle walkthrough of your safety beacon, memory games, and voice companion.",
+            "hi" to "अपने सुरक्षा बीकन, स्मृति खेलों और वाणी साथी का एक सौम्य परिचय सुनें।",
+            "as" to "আপোনাৰ সুৰক্ষা বীকন, স্মৃতি খেল আৰু কণ্ঠ সংগীৰ এক মৃদু চিনাকি শুনক।",
+            "lus" to "I himna radar, hriatrengna infiamna, leh aw puihtu inhrilhhriatna ngaihthlakna.",
+            "kha" to "Sngap ia ka jingbatai shaphang ka jingiada, ki jingialehkai bad u paralok kren."
+        ),
+        "tour_btn_start" to mapOf(
+            "en" to "Play Voice Tour",
+            "hi" to "ध्वनि यात्रा सुनें",
+            "as" to "কণ্ঠ ভ্ৰমণ শুনক",
+            "lus" to "Aw Hruaina Ngaithla",
+            "kha" to "Sngap Jingbatai"
+        ),
+        "tour_btn_dismiss" to mapOf(
+            "en" to "Dismiss",
+            "hi" to "हटाएं",
+            "as" to "বাতিল কৰক",
+            "lus" to "Hnawl Rawh",
+            "kha" to "Kyntait"
+        ),
+        "tour_speech_script" to mapOf(
+            "en" to "Hello and welcome to Smaran, where memories meet care. I am right here beside you. You can tap the green card to view your safe location, or the orange card to play gentle brain exercises like memory matching. Whenever you want to speak, just tap the orange microphone below or say 'Hey Smaran'. You are safe and surrounded with love.",
+            "hi" to "नमस्ते और स्मरण में आपका स्वागत है, जहाँ यादें देखभाल से मिलती हैं। मैं आपके साथ हूँ। आप अपने सुरक्षित स्थान के लिए हरा कार्ड छू सकते हैं, या स्मृति मिलान जैसे शांत खेल खेलने के लिए संतरी कार्ड दबा सकते हैं। जब भी आप बात करना चाहें, नीचे दिए गए संतरी माइक को दबाएं या कहें 'हे स्मरण'। आप सुरक्षित हैं और अपनों के प्यार के बीच हैं।",
+            "as" to "নমস্কাৰ আৰু স্মৰণলৈ আপোনাক স্বাগতম। মই আপোনাৰ কাষতেই আছোঁ। আপুনি আপোনাৰ সুৰক্ষিত স্থান চাবলৈ সেউজীয়া কাৰ্ডখন চুব পাৰে, অথবা স্মৃতি খেল খেলিবলৈ কমলা কাৰ্ডখন স্পৰ্শ কৰিব পাৰে। আপুনি যেতিয়াই কথা পাতিব বিচাৰে, তলৰ কমলা মাইকটো স্পৰ্শ কৰক বা 'হে স্মৰণ' বুলি কওক। আপুনি সম্পূৰ্ণ সুৰক্ষিত।",
+            "lus" to "Chibai, Smaran ah lo kal rawh. I kiangah ka awm reng e. I awmna him en nan a hring card hmet la, hriatna infiamna khelh nan a senduk card hmet rawh. Biak i duh chuan hnuai a mic hmet la emaw 'Hey Smaran' ti rawh. I him e.",
+            "kha" to "Khublei, pdiang sngewbha sha Smaran. Nga don hajan jong phi. Pynkhih ia ka card jyrngam ban iohi ia ka jaka shngiam, ne ka card saw-stem ban ialehkai. Lada kwah ban kren, kyntuit ia u mic ne ong 'Hey Smaran'. Phi shngiam bad don ha ka jingieid."
+        ),
+        "beacon_live" to mapOf(
+            "en" to "Safe Beacon Active",
+            "hi" to "सुरक्षा बीकन सक्रिय",
+            "as" to "সুৰক্ষা বীকন সক্ৰিয়",
+            "lus" to "Himna Radar A Nung",
+            "kha" to "Ka Jingiada ka Trei Kam"
+        ),
+        "beacon_standby" to mapOf(
+            "en" to "Protected & Safe",
+            "hi" to "सुरक्षित एवं शांत",
+            "as" to "সুৰক্ষিত আৰু শান্ত",
+            "lus" to "Him Takin Awm",
+            "kha" to "Shngiam bad Suk"
+        ),
+        "tile_gps_title" to mapOf(
+            "en" to "Safe Radar",
+            "hi" to "सुरक्षित रडार",
+            "as" to "সুৰক্ষিত ৰাডাৰ",
+            "lus" to "Himna Radar",
+            "kha" to "Radar Jingiada"
+        ),
+        "tile_gps_sub_broadcasting" to mapOf(
+            "en" to "Live guardian signal",
+            "hi" to "लाइव सुरक्षा संकेत",
+            "as" to "প্ৰত্যক্ষ নিৰাপত্তা সংকেত",
+            "lus" to "Venhimna thawn mek",
+            "kha" to "Dak jingiada ba live"
+        ),
+        "tile_gps_sub_standby" to mapOf(
+            "en" to "Family knows you are safe",
+            "hi" to "परिवार जानता है आप सुरक्षित हैं",
+            "as" to "পৰিয়ালে জানে আপুনি সুৰক্ষিত",
+            "lus" to "Chhungten i him tih an hria",
+            "kha" to "Kiba haiing ki tip phi shngiam"
+        ),
+        "tile_games_title" to mapOf(
+            "en" to "Brain Garden",
+            "hi" to "स्मृति वाटिका",
+            "as" to "মগজুৰ বাগিচা",
+            "lus" to "Thluak Huan",
+            "kha" to "Kper Jingmut"
+        ),
+        "tile_games_sub" to mapOf(
+            "en" to "Gentle memory games",
+            "hi" to "शांत स्मृति खेल",
+            "as" to "মৃদু স্মৃতি খেল",
+            "lus" to "Hriatrengna infiamna",
+            "kha" to "Ki jingialehkai jingmut"
+        ),
+        "tile_score_title" to mapOf(
+            "en" to "Mind Wellness",
+            "hi" to "मानसिक कल्याण",
+            "as" to "মনৰ মংগল",
+            "lus" to "Rilru Hriselna",
+            "kha" to "Jingkoit Jingmut"
+        ),
+        "tile_score_sub_tested" to mapOf(
+            "en" to "Your mind is bright & active",
+            "hi" to "आपका मन आज उज्ज्वल व सक्रिय है",
+            "as" to "আপোনাৰ মন আজি সক্ৰিয় আৰু উজ্জ্বল",
+            "lus" to "I rilru a harhvang tha",
+            "kha" to "Ka jingmut jong phi ka shai"
+        ),
+        "tile_score_sub_untested" to mapOf(
+            "en" to "Play today's gentle game",
+            "hi" to "आज का शांत खेल खेलें",
+            "as" to "আজিৰ শান্ত খেলটো খেলক",
+            "lus" to "Vawiin infiamna khel rawh",
+            "kha" to "Lehkai ka jingialehkai mynta"
+        ),
+        "tile_safety_title" to mapOf(
+            "en" to "Safe Haven",
+            "hi" to "सुरक्षा धाम",
+            "as" to "সুৰক্ষা নিকেতন",
+            "lus" to "Himna Hmun",
+            "kha" to "Jaka Shngiam"
+        ),
+        "tile_safety_sub" to mapOf(
+            "en" to "Always protected & guided",
+            "hi" to "सदैव सुरक्षित व निर्देशित",
+            "as" to "সদায় সুৰক্ষিত আৰু পথপ্ৰদৰ্শিত",
+            "lus" to "Venhima kaihhruai reng",
+            "kha" to "Iada bad ialam beit"
+        ),
+        "tile_voice_title" to mapOf(
+            "en" to "Regional Voices",
+            "hi" to "क्षेत्रीय वाणी",
+            "as" to "আঞ্চলিক ভাষা",
+            "lus" to "Mahni Ṭawng",
+            "kha" to "Ktien Tynrai"
+        ),
+        "tile_voice_sub" to mapOf(
+            "en" to "Spoken in your language",
+            "hi" to "आपकी अपनी भाषा में",
+            "as" to "আপোনাৰ নিজৰ ভাষাত",
+            "lus" to "Mahni tawng ngeiin",
+            "kha" to "Ha ka ktien lajong"
+        ),
+        "tile_memory_title" to mapOf(
+            "en" to "Memory Vault",
+            "hi" to "स्मृति कलश",
+            "as" to "স্মৃতি সম্ভাৰ",
+            "lus" to "Hriatrengna Rohlu",
+            "kha" to "Buh Jingkynmaw"
+        ),
+        "tile_memory_sub" to mapOf(
+            "en" to "Family photos & memories",
+            "hi" to "पारिवारिक तस्वीरें व यादें",
+            "as" to "পাৰিবাৰিক ফটো আৰু সোঁৱৰণি",
+            "lus" to "Chhungkaw thlalak leh hriatrengna",
+            "kha" to "Dur iing bad jingkynmaw"
         )
     )
 
@@ -1543,23 +1699,16 @@ object MultilingualManager {
         tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 isTtsReady = true
+                tts?.setSpeechRate(1.0f)
+                tts?.setPitch(1.0f)
                 tts?.language = Locale.ENGLISH
             }
         }
     }
 
     fun speak(text: String, langCode: String = "en") {
-        if (!isTtsReady || tts == null) return
         try {
-            when (langCode) {
-                "hi" -> tts?.language = Locale("hi", "IN")
-                "as", "lus", "kha", "mni", "nag" -> {
-                    val inLocale = Locale("en", "IN")
-                    tts?.language = inLocale
-                }
-                else -> tts?.language = Locale.ENGLISH
-            }
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "encouragement_utterance")
+            net.kibotu.geofencerelay.features.voice.VoiceAssistantManager.shared.speak(text, langCode)
         } catch (_: Exception) {}
     }
 
@@ -1579,6 +1728,25 @@ object MultilingualManager {
 
     fun getVoiceConfirmation(langCode: String): String {
         return voiceConfirmations[langCode] ?: voiceConfirmations["en"]!!
+    }
+
+    fun setLanguage(context: Context, langCode: String) {
+        try {
+            context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+                .edit()
+                .putString("selected_language", langCode)
+                .apply()
+            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .putString("selected_language", langCode)
+                .apply()
+        } catch (_: Exception) {}
+    }
+
+    fun stop() {
+        try {
+            tts?.stop()
+        } catch (_: Exception) {}
     }
 
     fun shutdown() {

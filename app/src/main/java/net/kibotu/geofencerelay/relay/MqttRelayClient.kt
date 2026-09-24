@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.kibotu.geofencerelay.features.ai.history.DailyScorecardItem
 import net.kibotu.geofencerelay.model.BreachAlert
 import net.kibotu.geofencerelay.model.GeofenceZone
 import net.kibotu.geofencerelay.model.LocationPing
@@ -54,6 +55,9 @@ class MqttRelayClient(
 
     private val _incomingCommand = MutableSharedFlow<RemoteCommand>(replay = 1, extraBufferCapacity = 16)
     override val incomingCommand: SharedFlow<RemoteCommand> = _incomingCommand.asSharedFlow()
+
+    private val _latestScorecard = MutableSharedFlow<DailyScorecardItem>(replay = 1, extraBufferCapacity = 16)
+    override val latestScorecard: SharedFlow<DailyScorecardItem> = _latestScorecard.asSharedFlow()
 
     fun sanitizeEmail(email: String): String {
         return email.trim().lowercase()
@@ -168,6 +172,11 @@ class MqttRelayClient(
                         _incomingCommand.emit(cmd)
                         Log.d(tag, "Received remote command: ${cmd.command}")
                     }
+                    topic.endsWith("/scorecard") -> {
+                        val scorecard = json.decodeFromString<DailyScorecardItem>(payload)
+                        _latestScorecard.emit(scorecard)
+                        Log.d(tag, "Received scorecard from ${scorecard.deviceName}: ${scorecard.gameType} (CPS=${scorecard.cpsScore})")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(tag, "Error parsing incoming payload on $topic: ${e.message}")
@@ -238,6 +247,21 @@ class MqttRelayClient(
         if (!ok) {
             ensureConnected(targetEmail)
             ok = publishInternal(topic, payload, qos = 1, retained = false)
+        }
+        ok
+    }
+
+    override suspend fun publishScorecard(targetEmail: String, scorecard: DailyScorecardItem): Boolean = withContext(Dispatchers.IO) {
+        val devicePart = if (scorecard.deviceId.isNotBlank()) scorecard.deviceId else scorecard.id
+        val topic = "bmtc_findmy/v2/${sanitizeEmail(targetEmail)}/$devicePart/scorecard"
+        val payload = json.encodeToString(scorecard)
+        if (client?.isConnected != true) {
+            ensureConnected(targetEmail)
+        }
+        var ok = publishInternal(topic, payload, qos = 1, retained = true)
+        if (!ok) {
+            ensureConnected(targetEmail)
+            ok = publishInternal(topic, payload, qos = 1, retained = true)
         }
         ok
     }

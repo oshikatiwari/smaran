@@ -280,24 +280,25 @@ fun GoogleSignInScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // App Name Only
+                // App Name
                 Text(
                     text = "SMARAN",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Black,
                     color = NerColors.Charcoal,
-                    letterSpacing = 1.5.sp
+                    letterSpacing = 2.sp
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 // Exact Tagline Required by User
                 Text(
-                    text = "Guiding minds. Supporting families",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = NerColors.NeutralMedium,
-                    textAlign = TextAlign.Center
+                    text = "Where Memories Meet Care",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = NerColors.Primary,
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 0.5.sp
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))

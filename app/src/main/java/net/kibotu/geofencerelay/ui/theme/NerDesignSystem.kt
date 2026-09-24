@@ -45,46 +45,46 @@ import androidx.compose.ui.unit.sp
  * - Accents: Crimson SOS (#C62828), Marigold Gold (#F57F17), Warm Porcelain Canvas (#F7F5F0)
  */
 object NerColors {
-    // Primary Terracotta / Amber Orange
-    val Primary = Color(0xFFE65100)
-    val PrimaryDark = Color(0xFFBF360C)
-    val PrimaryLight = Color(0xFFFF7526)
-    val PrimaryTint = Color(0xFFFFF0E6)
-    val PrimarySoft = Color(0xFFFFD1B5)
+    // Primary Insight Timer Amber & Zen Bronze Palette
+    val Primary = Color(0xFFD97706)          // Insight Timer Warm Amber Gold
+    val PrimaryDark = Color(0xFFB45309)      // Singing bell bronze
+    val PrimaryLight = Color(0xFFF59E0B)     // Radiant warm amber
+    val PrimaryTint = Color(0xFFFFFBEB)      // Very soft warm amber tint
+    val PrimarySoft = Color(0xFFFDE68A)
 
-    // Secondary Botanical Forest Green
-    val Secondary = Color(0xFF1B5E20)
-    val SecondaryDark = Color(0xFF0F3813)
-    val SecondaryLight = Color(0xFF2E7D32)
-    val SecondaryTint = Color(0xFFE8F5E9)
-    val SecondarySoft = Color(0xFFC8E6C9)
+    // Secondary Tranquil Botanical Emerald
+    val Secondary = Color(0xFF059669)        // Tranquil emerald green
+    val SecondaryDark = Color(0xFF047857)
+    val SecondaryLight = Color(0xFF10B981)
+    val SecondaryTint = Color(0xFFF0FDF4)
+    val SecondarySoft = Color(0xFFBBF7D0)
 
-    // Tertiary Royal Cobalt Blue
-    val Tertiary = Color(0xFF0D47A1)
-    val TertiaryDark = Color(0xFF072759)
-    val TertiaryLight = Color(0xFF1976D2)
-    val TertiaryTint = Color(0xFFE3F2FD)
-    val TertiarySoft = Color(0xFFBBDEFB)
+    // Tertiary Serene Sky / Slate
+    val Tertiary = Color(0xFF1E293B)         // Calm slate navy
+    val TertiaryDark = Color(0xFF0F172A)
+    val TertiaryLight = Color(0xFF334155)
+    val TertiaryTint = Color(0xFFF1F5F9)
+    val TertiarySoft = Color(0xFFE2E8F0)
 
-    // Neutrals & Surfaces (Dark-Whitish Aesthetic)
-    val Charcoal = Color(0xFF1E1E1E)
-    val NeutralDark = Color(0xFF121212)
-    val NeutralMedium = Color(0xFF5A5A5A)
-    val NeutralLight = Color(0xFF8E8E8E)
-    val NeutralSoft = Color(0xFFDEDBD3)
-    val NeutralBorder = Color(0xFFD2CEC4)
-    val CanvasWarm = Color(0xFFECEAE5)      // Dark-whitish alabaster canvas
-    val CanvasIvory = Color(0xFFF1EFEA)     // Elevated dark-white
-    val SurfaceWhite = Color(0xFFF7F6F2)    // Refined dark-whitish card surface
+    // Neutrals & Surfaces (Insight Timer Serene Zen Linen Palette)
+    val Charcoal = Color(0xFF23272F)         // Mindful charcoal text
+    val NeutralDark = Color(0xFF1E293B)
+    val NeutralMedium = Color(0xFF5A6270)
+    val NeutralLight = Color(0xFF9CA3AF)
+    val NeutralSoft = Color(0xFFF6F3EC)
+    val NeutralBorder = Color(0xFFE8E2D5)    // Gentle warm linen border
+    val CanvasWarm = Color(0xFFFAF9F6)       // Exact Insight Timer Zen linen canvas
+    val CanvasIvory = Color(0xFFFAF9F6)      // Zen canvas
+    val SurfaceWhite = Color(0xFFFFFFFF)     // Pure white card surface
 
-    // Vibrant Cultural Accents
-    val Crimson = Color(0xFFC62828)
-    val CrimsonTint = Color(0xFFFFEBEE)
-    val Marigold = Color(0xFFF57F17)
-    val MarigoldTint = Color(0xFFFFF8E1)
-    val PlumMaroon = Color(0xFF6B1724)
-    val PlumTint = Color(0xFFFCE4EC)
-    val SkyBlue = Color(0xFF0288D1)
+    // Soft Accents
+    val Crimson = Color(0xFFDC2626)
+    val CrimsonTint = Color(0xFFFEF2F2)
+    val Marigold = Color(0xFFD97706)
+    val MarigoldTint = Color(0xFFFFFBEB)
+    val PlumMaroon = Color(0xFF9333EA)
+    val PlumTint = Color(0xFFFAF5FF)
+    val SkyBlue = Color(0xFF0284C7)
 }
 
 enum class NerButtonHierarchy {

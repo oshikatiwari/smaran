@@ -1,39 +1,46 @@
-﻿package net.kibotu.geofencerelay.features.ai.history
+package net.kibotu.geofencerelay.features.ai.history
 
 import android.content.Context
+import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import net.kibotu.geofencerelay.features.ai.model.CpsAssessmentResult
 import net.kibotu.geofencerelay.features.ai.model.SubDomainScores
+import net.kibotu.geofencerelay.relay.MqttRelayClient
+import net.kibotu.geofencerelay.service.TrackerForegroundService
 import org.json.JSONArray
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import java.util.UUID
 
+@Serializable
 data class DailyScorecardItem(
     val id: String = UUID.randomUUID().toString(),
+    val deviceId: String = "",
+    val deviceName: String = "",
     val timestamp: Long = System.currentTimeMillis(),
-    val dateFormatted: String,
-    val dayKey: String,
-    val gameType: String,
-    val difficulty: String, // Selected by AI
-    val cpsScore: Double,
-    val accuracy: Double,
-    val durationMs: Long,
-    val attempts: Int,
-    val errors: Int,
-    val memoryRetention: Double,
-    val reactionLatency: Double,
-    val executiveFunction: Double,
-    val patientMessage: String,
-    val caregiverSummary: String,
-    val anomalyDetected: Boolean
+    val dateFormatted: String = "",
+    val dayKey: String = "",
+    val gameType: String = "",
+    val difficulty: String = "Medium", // Selected by AI
+    val cpsScore: Double = 0.0,
+    val accuracy: Double = 0.0,
+    val durationMs: Long = 0L,
+    val attempts: Int = 0,
+    val errors: Int = 0,
+    val memoryRetention: Double = 0.0,
+    val reactionLatency: Double = 0.0,
+    val executiveFunction: Double = 0.0,
+    val patientMessage: String = "",
+    val caregiverSummary: String = "",
+    val anomalyDetected: Boolean = false
 )
 
 /**
  * Lifetime Cognitive History & Daily Scorecard Manager.
  * Persistently stores all cognitive assessments, multi-domain telemetry, and daily scorecards
- * in SharedPreferences for the entire lifetime of the installation.
+ * in SharedPreferences for the entire lifetime of the installation, and broadcasts to caregivers via MQTT.
  */
 object CognitiveHistoryManager {
 
@@ -59,13 +66,20 @@ object CognitiveHistoryManager {
         } catch (_: Exception) {}
     }
 
-    fun recordScorecard(context: Context, scorecard: DailyScorecardItem) {
+    fun getLatestScorecard(context: Context): DailyScorecardItem? {
+        val list = getAllScorecards(context)
+        return list.firstOrNull()
+    }
+
+    fun recordScorecard(context: Context, scorecard: DailyScorecardItem, shouldBroadcast: Boolean = true) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val rawJson = prefs.getString(KEY_SCORECARDS, "[]") ?: "[]"
         try {
             val array = JSONArray(rawJson)
             val itemObj = JSONObject().apply {
                 put("id", scorecard.id)
+                put("deviceId", scorecard.deviceId)
+                put("deviceName", scorecard.deviceName)
                 put("timestamp", scorecard.timestamp)
                 put("dateFormatted", scorecard.dateFormatted)
                 put("dayKey", scorecard.dayKey)
@@ -83,14 +97,37 @@ object CognitiveHistoryManager {
                 put("caregiverSummary", scorecard.caregiverSummary)
                 put("anomalyDetected", scorecard.anomalyDetected)
             }
-            // Prepend newest first
+            // Prepend newest first, deduplicating by id
             val newArray = JSONArray()
             newArray.put(itemObj)
             for (i in 0 until array.length()) {
-                newArray.put(array.get(i))
+                val existing = array.getJSONObject(i)
+                if (existing.optString("id") != scorecard.id) {
+                    newArray.put(existing)
+                }
             }
             prefs.edit().putString(KEY_SCORECARDS, newArray.toString()).apply()
         } catch (_: Exception) {}
+
+        if (shouldBroadcast) {
+            broadcastScorecard(context, scorecard)
+        }
+    }
+
+    fun broadcastScorecard(context: Context, scorecard: DailyScorecardItem) {
+        val emails = TrackerForegroundService.getAuthorizedEmails(context)
+        if (emails.isEmpty()) return
+        CoroutineScope(Dispatchers.IO).launch {
+            for (email in emails) {
+                if (email.isBlank()) continue
+                try {
+                    MqttRelayClient.shared.publishScorecard(email, scorecard)
+                    Log.d("CognitiveHistoryManager", "Broadcasted scorecard to $email: ${scorecard.gameType} (CPS=${scorecard.cpsScore})")
+                } catch (e: Exception) {
+                    Log.e("CognitiveHistoryManager", "Failed to broadcast scorecard to $email: ${e.message}")
+                }
+            }
+        }
     }
 
     fun getAllScorecards(context: Context): List<DailyScorecardItem> {
@@ -104,6 +141,8 @@ object CognitiveHistoryManager {
                 list.add(
                     DailyScorecardItem(
                         id = obj.optString("id", UUID.randomUUID().toString()),
+                        deviceId = obj.optString("deviceId", ""),
+                        deviceName = obj.optString("deviceName", ""),
                         timestamp = obj.optLong("timestamp", System.currentTimeMillis()),
                         dateFormatted = obj.optString("dateFormatted", "Today"),
                         dayKey = obj.optString("dayKey", ""),

@@ -203,6 +203,16 @@ class TrackerForegroundService : Service() {
                 for (email in authorizedEmails) {
                     MqttRelayClient.shared.subscribeForEmail(email)
                 }
+
+                // Sync latest scorecard to caregiver on connect
+                val latestScorecard = net.kibotu.geofencerelay.features.ai.history.CognitiveHistoryManager.getLatestScorecard(applicationContext)
+                if (latestScorecard != null) {
+                    for (email in authorizedEmails) {
+                        try {
+                            MqttRelayClient.shared.publishScorecard(email, latestScorecard)
+                        } catch (_: Exception) {}
+                    }
+                }
             }
             fetchImmediateLocationFix()
         }
@@ -587,6 +597,17 @@ class TrackerForegroundService : Service() {
                 result.add(loggedInEmail)
             }
             return result
+        }
+
+        fun getDeviceId(context: Context): String {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return prefs.getString(KEY_DEVICE_ID, null) ?: UUID.randomUUID().toString().take(8).also {
+                prefs.edit().putString(KEY_DEVICE_ID, it).apply()
+            }
+        }
+
+        fun getDeviceName(): String {
+            return LocationUtils.getFriendlyDeviceName(Build.MODEL)
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿package net.kibotu.geofencerelay.ui.guardian
+package net.kibotu.geofencerelay.ui.guardian
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import net.kibotu.geofencerelay.features.ai.history.CognitiveHistoryManager
+import net.kibotu.geofencerelay.features.ai.history.DailyScorecardItem
 import net.kibotu.geofencerelay.model.BreachAlert
 import net.kibotu.geofencerelay.model.GeofenceZone
 import net.kibotu.geofencerelay.model.LocationPing
@@ -55,6 +57,12 @@ class GuardianViewModel(application: Application) : AndroidViewModel(application
 
     private val _isPlayingSound = MutableStateFlow(false)
     val isPlayingSound = _isPlayingSound.asStateFlow()
+
+    private val _latestScorecard = MutableStateFlow<DailyScorecardItem?>(null)
+    val latestScorecard = _latestScorecard.asStateFlow()
+
+    private val _scorecardsHistory = MutableStateFlow<List<DailyScorecardItem>>(emptyList())
+    val scorecardsHistory = _scorecardsHistory.asStateFlow()
 
     private var breachAlertJob: Job? = null
     private var hasCustomZoneLocation = false
@@ -167,6 +175,20 @@ class GuardianViewModel(application: Application) : AndroidViewModel(application
                         val dist = ping?.distanceFromCenter ?: (alert.distanceMeters)
                         updateBreachStatus(dist)
                     }
+                }
+            }
+
+            // Load existing scorecards from local history
+            val app = getApplication<Application>()
+            _latestScorecard.value = CognitiveHistoryManager.getLatestScorecard(app)
+            _scorecardsHistory.value = CognitiveHistoryManager.getAllScorecards(app)
+
+            // Listen for incoming cognitive scorecards from tracker
+            launch {
+                relay.latestScorecard.collect { scorecard ->
+                    _latestScorecard.value = scorecard
+                    CognitiveHistoryManager.recordScorecard(app, scorecard, shouldBroadcast = false)
+                    _scorecardsHistory.value = CognitiveHistoryManager.getAllScorecards(app)
                 }
             }
         }

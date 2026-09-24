@@ -5,6 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+layout.buildDirectory.set(file("D:/Android/builds/caregiver"))
+
 android {
     namespace = "net.kibotu.geofencerelay"
     compileSdk = 35

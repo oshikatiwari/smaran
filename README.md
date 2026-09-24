@@ -1,111 +1,119 @@
-﻿# Smaran — Assistive Sentinel & Cognitive Care Platform (Patient Tracker)
+# SMARAN : Where Memories Meet Care
 
 <p align="center">
   <img src="app/src/main/res/drawable/smaran_logo.png" alt="Smaran Logo" width="120" />
 </p>
 
-A state-of-the-art Android assistive application engineered with **Kotlin**, **Jetpack Compose**, and **OpenStreetMap (OSMDroid)**. Smaran pairs an ultra-reliable **Zero-Cloud GPS Sentinel & Safety Beacon** with an autonomous, on-device **Clinical Cognitive Health & Brain Exercise Engine**.
+<p align="center">
+  <b>Autonomous On-Device AI Cognitive Health Sentinel, Mind Wellness Baseline & Gentle Dementia Companion</b>
+</p>
 
-Tailored specifically for elder care, early memory support, and Alzheimer's/dementia assistance, Smaran combines an ergonomic **Apple iOS Assistive Access** senior-friendly interface with a soothing dark-whitish aesthetic, high-contrast typography, and artistic motifs inspired by Northeast India (Assam, Meghalaya, Manipur, Mizoram, Nagaland).
-
----
-
-## 📦 Pre-Built Release APK (Tracker Mod)
-
-The pre-built, production-ready Tracker APK is included directly within this repository:
-
-* **Download Tracker APK**: [release/Smaran-Tracker-v1.0.apk](release/Smaran-Tracker-v1.0.apk)
-* **Application Role**: Patient Device (Tracker & Cognitive Companion)
-* **Package Name**: `net.kibotu.geofencerelay.tracker`
-* **Version**: 1.0.0
-* **Target Android Compatibility**: Android 8.0 (API 26) through Android 14 (API 34)
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android%208.0%2B%20(API%2026--35)-brightgreen?style=flat-square" />
+  <img src="https://img.shields.io/badge/UI-Jetpack%20Compose-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Aesthetic-Insight%20Timer%20Zen%20Linen-amber?style=flat-square" />
+  <img src="https://img.shields.io/badge/Inference-100%25%20On--Device%20(Zero%20Cloud)-success?style=flat-square" />
+  <img src="https://img.shields.io/badge/Languages-10%20Indian%20Languages-orange?style=flat-square" />
+</p>
 
 ---
 
-## 🌟 Core Features & Architecture
+## 🌟 Overview & Novelty
 
-### 1. 🧠 Autonomous On-Device AI Cognitive Engine (CPS Engine)
-- **Mathematical ML Model Port**: Emulates an ensemble XGBoost and Random Forest clinical scoring model in pure Kotlin (`CpsEngine.kt`), operating in $<1\text{ms}$ on-device with zero cloud latency.
-- **Autonomous Difficulty Tuning**: The AI engine dynamically selects and scales game challenge across **Easy**, **Medium**, and **Hard** in real time based on player reaction latency, accuracy percentage, and error-recovery patterns.
-- **Objective Clinical Telemetry**:
-  - Memory Retention Index (0–100%)
-  - Executive Function Index (0–100%)
-  - Reaction Latency & Speed Score
-  - Autobiographical Reminiscence Index
-  - Error Recovery & Adaptive Resilience
-  - Biomotor Fine-Jitter and Acoustic Speech Diagnostics
-- **Lifetime Persistent Cognitive History**: All session results and cumulative CPS metrics are permanently tracked in local persistent storage (`CognitiveHistoryManager.kt`), surviving reboots and updates.
-- **Daily Scorecards History**: Patients and clinicians can inspect past sessions with granular timestamps, game categories, AI difficulty levels, and personalized therapeutic guidance.
-- **Dignity & Stigma Safeguards**: Avoids negative clinical labeling ("impaired", "failed"); framed constructively as uplifting memory journeys.
+**SMARAN** (*स्मरण* — Sanskrit for *Remembrance*) is an AI-driven, senior-accessible healthcare ecosystem designed for elders and individuals living with early-stage Alzheimer's disease, dementia, and cognitive decline.
 
-### 2. 🎮 Cognitive Brain Exercise Suite
-- **Memory Card Match**: Senior-friendly card tiles with high touch targets, dynamic tactile feedback, and progressive pairs.
-- **Pattern Recall**: Sequential visual pattern flash exercises that stimulate short-term working memory without cognitive exhaustion.
-- **Color Stroop Challenge**: High-contrast chromatic Stroop conflict assessments testing cognitive inhibition and executive attention.
-- **Ascending Trail Making Game**: Sequential numerical Trail Making Test (TMT-A) measuring processing speed, visual scanning, and motor coordination.
-
-### 3. 🖼️ Autobiographical Reminiscence Memory Vault
-- Interactive family reminiscence cards with high-contrast portraits, names, relationships, and voice recordings.
-- Provides immediate autobiographical recall and emotional grounding during disorientation, sundowning, or memory lapses.
-
-### 4. 📍 GPS Beacon Sentinel & Safe Zone Geofencing
-- **Real-Time GPS Broadcaster (`TrackerForegroundService`)**: Securely broadcasts live patient coordinates over lightweight, decentralized MQTT topics to paired caregiver devices.
-- **Wandering Geofence Sentinel**: Triggers immediate alerts when the patient exits pre-configured safe zones.
-- **One-Tap "Take Me Home" Navigation**: Instantly opens navigation back to the patient's verified home address using native map routing or open turn-by-turn navigation.
-- **Crash-Resistant Foreground Operation**: Battery-optimized foreground service with proactive runtime permission handling.
-
-### 5. 🚨 Critical Safety Alarms & Wake-Up System
-- **Full-Screen Wake-up Activity (`AlarmFullScreenActivity`)**: Overrides lock screens using `FLAG_SHOW_WHEN_LOCKED`, `FLAG_TURN_SCREEN_ON`, and `FLAG_KEEP_SCREEN_ON` for urgent safety checks.
-- **Auditory & Haptic Pulses**: High-urgency pulsating alarm tones paired with continuous vibration patterns.
-- **Boot Recovery (`BootReceiver`)**: Automatically reschedules alarms and resumes tracking immediately upon device reboot.
-
-### 6. 🗣️ Multilingual Regional Support & TTS Voice Guidance
-- **7 Regional Dialects Supported**:
-  - English
-  - Hindi (हिन्दी)
-  - Assamese (অসমীয়া)
-  - Mizo (Mizo ṭawng)
-  - Khasi (Ka Ktien Khasi)
-  - Manipuri (মৈতৈলোন্)
-  - Nagamese
-- Integrated Android `TextToSpeech` vocal guidance for every navigation action, prompt, and exercise instruction.
-
-### 7. 🎨 Senior-Centric Design System
-- **Dark-Whitish Ergonomics**: Ultra-clean cream and ivory backgrounds (`#FBF9F5` / `#F3EFEA`) paired with deep charcoal typography (`#1C1B1F`) for optimal contrast and reduced eye strain.
-- **Accessibility**: Minimum touch targets of 48–56dp, oversized tactile buttons, clear status badges, and no text clipping.
-- **Cultural Identity**: Authentic aesthetic accents inspired by Northeast India's heritage.
+Unlike overwhelming clinical apps, SMARAN blends **evidence-based clinical neuroscience (MMSE & CPS testing)** with a soothing, anxiety-reducing **Insight Timer-inspired Zen aesthetic** (`#FAF9F6` warm linen canvas, singing bowl amber accents, and serif typography).
 
 ---
 
-## 🔒 Privacy & Local Processing
+## 📱 App Experience & Onboarding Journey
 
-- **100% Local Processing**: All cognitive calculations, game scores, and personal reminiscence data remain strictly on the local device.
-- **Zero Cloud Account Mandate**: Does not lock patient data into proprietary subscription servers or commercial cloud APIs.
-
----
-
-## 🛠️ Build & Development
-
-### Requirements
-- Android SDK 34 (Android 14)
-- JDK 17 or JDK 21 (e.g., Android Studio JBR)
-- Gradle 8.2+
-
-### Building the Tracker App from Source
-
-```powershell
-# Set Java Home (adjust path as needed)
-$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-
-# Build Tracker APK
-.\gradlew assembleTrackerDebug
-
-# Run Unit Tests
-.\gradlew testTrackerDebugUnitTest
+```mermaid
+flowchart TD
+    A["🕉️ SMARAN Splash\n'Where memories meet care'"] --> B["🌐 Upfront Language Choice\n(10 Regional Indian Languages)"]
+    B --> C["🧠 Gentle Cognitive Baseline Test\n(Standardized Clinical 4-Step Screening)"]
+    C --> D["⏱️ Step 1: Time Orientation\n(Year & Season Check)"]
+    D --> E["📝 Step 2: 3-Word Registration\n(Lotus, River, Sunlight)"]
+    E --> F["🔔 Step 3: Amber Bell Reflex\n(Neural Reaction Latency in ms)"]
+    F --> G["🔍 Step 4: Delayed Word Recall\n(Memory Retrieval)"]
+    G --> H["🌙 Final Check: Rest & Age"]
+    H --> I["Elevate-Style Transition\n'Preparing your results...'"]
+    I --> J["📊 Results & Domain Breakdown Graph\n• MMSE Score (0-30)\n• Cognitive Proficiency Quotient (EPQ)\n• Domain Graph: Memory, Speed, Focus, Agility, Orientation\n• Dynamic Difficulty: Easy / Medium / Difficult\n• Personalized Daily Mind Roadmap"]
+    J --> K["🌿 Enter Smaran Sanctuary\n(All Games & Panels Auto-Calibrated)"]
 ```
 
-The compiled APK will be generated at:
-`app/build/outputs/apk/tracker/debug/app-tracker-debug.apk`
+---
 
-And the distribution release APK is located at:
-`release/Smaran-Tracker-v1.0.apk`
+## 🚀 Key Features
+
+### 1. 🧠 Kaggle-Trained Machine Learning Model & On-Device Engine
+- **Clinical Training Cohort**: Trained on a 5,000-participant clinical dataset across 13 physiological and behavioral biomarkers (Age, Sleep Quality, GDS Depression Score, Glucose, Physical Activity, BMI, Chronic Disease Index).
+- **On-Device Edge Inference (`CognitiveMlEngine.kt`)**: 
+  - Predicts **MMSE score** (0–30 clinical standard), cognitive impairment risk, and Elevate-style **EPQ Cognitive Proficiency Score** (1,000–2,000).
+  - Computes sub-millisecond predictions directly on the device with **zero cloud dependencies, zero latency, and 100% privacy**.
+- **Dynamic Difficulty Calibration**: Automatically maps cognitive test results to calibrate app difficulty:
+  - **MMSE < 18**: Calibrated to **Easy** (2x2 grid, gentle cues, relaxed timers).
+  - **MMSE 18–24**: Calibrated to **Medium** (3x3 grid, standard pacing).
+  - **MMSE 25–30**: Calibrated to **Difficult** (4x3 grid, rapid reaction stimuli).
+
+### 2. 📊 Advanced Cognitive Domain Breakdown Graph
+- Visual multi-bar graph breakdown directly in the results scorecard:
+  - 🧠 **Memory & Recall** (Working memory retention percentage)
+  - ⚡ **Processing Speed** (Neural reaction speed in milliseconds)
+  - 🧭 **Orientation** (Temporal & calendar awareness)
+  - 🎯 **Focus & Attention** (Sustained cognitive focus)
+  - 🔄 **Mental Agility** (Executive cognitive flexibility)
+- Scale benchmarks: `0% (Baseline)`, `50% (Average)`, `100% (Optimal)`.
+
+### 3. 🎨 Insight Timer Inspired Zen Aesthetics
+- **Warm Zen Linen Canvas**: Low-glare, eye-friendly `#FAF9F6` background.
+- **Amber Singing Bell Accents**: Mindful amber gold (`#D97706` / `#B45309`) inspiring tranquility and focus.
+- **Pure White Elevation Cards**: Clean rounded surfaces (`#FFFFFF`) with gentle warm linen borders (`#E8E2D5`).
+- **Warm Serif Typography**: Legible, serene typography reducing cognitive fatigue.
+
+### 4. 🗣️ Multilingual Voice Assistant & Wake-Word Overlay
+- **10 Indian Languages**: English, हिन्दी (Hindi), தமிழ் (Tamil), తెలుగు (Telugu), ಕನ್ನಡ (Kannada), বাংলা (Bengali), मराठी (Marathi), ગુજરાતી (Gujarati), ਪੰਜਾਬੀ (Punjabi), മലയാളം (Malayalam).
+- **Soothing Doctor Tone**: Formatted with warm, patient speech cadence rather than robotic railway-station synthesis.
+- **Two-Way Voice Interaction**: Answers questions about family location, medicine timings, and daily memory reminders.
+
+### 5. 📞 Keypad Phone Telephony Architecture (Novelty for Rural & Elder Accessibility)
+- Solves the critical real-world problem where elderly patients with severe tremors or dementia cannot operate touchscreens.
+- Uses a **GSM Voice Gateway (IVR/SIP Trunk)**:
+  - The elder presses a single physical speed-dial button (e.g., Key `5`) on an affordable ₹800 keypad phone.
+  - The call connects to SMARAN’s cloud voice engine.
+  - The AI speaks back directly through the phone earpiece in a soothing doctor's voice.
+  - Caregivers receive real-time notification transcripts on their smartphone.
+
+### 6. 🛡️ GPS Geofence Sentinel & Safety Radar
+- Battery-optimized background tracking broadcasting coordinates over secure MQTT.
+- Safe-zone perimeter geofencing alert system.
+- One-tap *"Take Me Home"* return routing.
+
+---
+
+## 📂 Repository Branches
+
+| Branch | App Focus | Description |
+| :--- | :--- | :--- |
+| **`main`** | **Patient Tracker App** | Baseline cognitive assessment, 10-language selector, mind exercise suite, Insight Timer UI, and voice assistant. |
+| **`caregiver`** | **Caregiver Guardian App** | Remote geofence tracking, live location monitoring, caregiver voice actions, and cognitive health telemetries. |
+
+---
+
+## 📦 Download Ready APKs
+
+Pre-compiled production-ready APKs are available in the repository package:
+- **Patient Tracker APK**: `release/Smaran-Tracker-Patient.apk`
+- **Caregiver Guardian APK**: `release/Smaran-Guardian-Caregiver.apk`
+
+---
+
+## 🛠️ Tech Stack
+
+- **Language**: Kotlin 1.9+, Java 17
+- **UI Toolkit**: Jetpack Compose, Material 3
+- **Machine Learning**: Scikit-Learn (Random Forest, Gradient Boosting, Ridge Regressors) ported to on-device Kotlin (`CognitiveMlEngine.kt`)
+- **Location & Maps**: OSMDroid (OpenStreetMap), Google Play Location Services
+- **Speech & Audio**: Android TextToSpeech (TTS), Android SpeechRecognizer, WebRTC/SIP Gateway Pipeline
+- **Networking**: Paho MQTT, Retrofit2, OkHttp3
+- **Data Persistence**: Android SharedPreferences, Room Database

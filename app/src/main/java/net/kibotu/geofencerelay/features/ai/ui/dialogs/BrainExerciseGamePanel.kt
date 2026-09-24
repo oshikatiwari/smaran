@@ -458,7 +458,7 @@ private fun GameLiveHud(
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "AI Level: $activeDifficulty",
+                    text = "Level: $activeDifficulty",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = GoogleColors.Blue
@@ -483,6 +483,29 @@ private fun ClinicalGameResultCard(
     val durationSec = metrics.durationMs / 1000
     val durationFormatted = String.format("%02d:%02d", durationSec / 60, durationSec % 60)
     val recLevel = analysis?.recommendedLevel ?: "Medium"
+
+    // Spoken Voice Feedback immediately when the game completes
+    LaunchedEffect(metrics) {
+        val accPercent = (metrics.accuracy * 100).roundToInt()
+        val speechText = if (isCompleted && accPercent >= 75) {
+            when (selectedLanguageCode) {
+                "hi" -> "बहुत बढ़िया प्रदर्शन! आपकी एकाग्रता और याददाश्त बहुत अच्छी है।"
+                "as" -> "অতি সুন্দৰ প্ৰদৰ্শন! আপোনাৰ মনোযোগ আৰু স্মৃতিশক্তি সজীৱ হৈ আছে।"
+                "lus" -> "I ti tha hle mai! I rilru leh hriatna a chak hle."
+                "kha" -> "Phi la leh bha shibun! Ka jingmut jong phi ka long kaba skhem."
+                else -> "Wonderful performance! Your memory and focus are sharp and active."
+            }
+        } else {
+            when (selectedLanguageCode) {
+                "hi" -> "अच्छा प्रयास! रोज़ाना अभ्यास करने से याददाश्त और बेहतर होगी।"
+                "as" -> "ভাল প্ৰচেষ্টা! নিয়মিত অনুশীলনে আপোনাৰ স্মৃতিশক্তি অধিক উন্নত কৰিব।"
+                "lus" -> "Inelna tha tak a ni! Nitin zirna hian hriatna a ti chak zual ang."
+                "kha" -> "Ka jingpyrshang kaba bha! Ka jinghikai man ka sngi kan iarap ban pynbha shuh shuh."
+                else -> "Good effort! Regular daily practice will keep your mind strong and agile."
+            }
+        }
+        MultilingualManager.speak(speechText, selectedLanguageCode)
+    }
 
     Card(
         modifier = Modifier
@@ -547,7 +570,7 @@ private fun ClinicalGameResultCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. SMARAN AI & ML Adaptive Diagnostics Box
+            // 3. SMARAN Adaptive Diagnostics Box
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -566,7 +589,7 @@ private fun ClinicalGameResultCard(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Psychology, contentDescription = null, tint = GoogleColors.Blue, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("SMARAN AI Adaptive Engine", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = NerColors.Charcoal)
+                            Text("Adaptive Mind Calibration", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = NerColors.Charcoal)
                         }
                         Box(
                             modifier = Modifier
@@ -574,7 +597,7 @@ private fun ClinicalGameResultCard(
                                 .background(GoogleColors.Blue)
                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
-                            Text("AI Next: $recLevel", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("Recommended: $recLevel", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
 
@@ -645,7 +668,7 @@ private fun ClinicalGameResultCard(
             ) {
                 Icon(Icons.Default.Replay, contentDescription = null, tint = Color.White)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Play Next Round (AI Level: $recLevel)", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("Play Next Round (Level: $recLevel)", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(8.dp))

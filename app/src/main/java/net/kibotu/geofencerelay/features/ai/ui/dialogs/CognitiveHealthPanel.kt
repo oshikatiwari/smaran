@@ -498,7 +498,7 @@ private fun DailyScorecardCard(card: DailyScorecardItem) {
                         .background(GoogleColors.Blue.copy(alpha = 0.15f))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text("AI: ${card.difficulty}", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoogleColors.Blue)
+                    Text("Level: ${card.difficulty}", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoogleColors.Blue)
                 }
             }
 

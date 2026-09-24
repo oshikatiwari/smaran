@@ -43,7 +43,7 @@ fun MemoryVaultPanel(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    var cards by remember { mutableStateOf(ReminiscenceManager.loadAllCards(context)) }
+    var cards by remember(selectedLanguageCode) { mutableStateOf(ReminiscenceManager.loadAllCards(context, selectedLanguageCode)) }
     var currentCardIndex by remember { mutableStateOf(0) }
     var selectedOptionIndex by remember { mutableStateOf<Int?>(null) }
     var showAffirmation by remember { mutableStateOf(false) }
@@ -331,7 +331,7 @@ fun MemoryVaultPanel(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        ReminiscenceManager.defaultThemes.forEach { theme ->
+                        ReminiscenceManager.getDefaultThemes(selectedLanguageCode).forEach { theme ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -374,7 +374,7 @@ fun MemoryVaultPanel(
                 onDismiss = { showAddDialog = false },
                 onSave = { newCard ->
                     ReminiscenceManager.saveCustomCard(context, newCard)
-                    cards = ReminiscenceManager.loadAllCards(context)
+                    cards = ReminiscenceManager.loadAllCards(context, selectedLanguageCode)
                     currentCardIndex = cards.size - 1
                     showAddDialog = false
                 }
@@ -389,7 +389,7 @@ private fun FamilyAddMemoryDialog(
     onDismiss: () -> Unit,
     onSave: (MemoryCard) -> Unit
 ) {
-    val themes = ReminiscenceManager.defaultThemes
+    val themes = ReminiscenceManager.getDefaultThemes(selectedLanguageCode)
     var selectedThemeIdx by remember { mutableStateOf(0) }
     var title by remember { mutableStateOf("") }
     var question by remember { mutableStateOf("") }

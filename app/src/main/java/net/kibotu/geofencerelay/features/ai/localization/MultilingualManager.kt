@@ -18,9 +18,7 @@ object MultilingualManager {
         LanguageItem("hi", "Hindi", "हिंदी", ""),
         LanguageItem("as", "Assamese", "অসমীয়া", ""),
         LanguageItem("lus", "Mizo", "Mizo ṭawng", ""),
-        LanguageItem("kha", "Khasi", "Ka Ktien Khasi", ""),
-        LanguageItem("mni", "Manipuri", "মৈতৈলোন্", ""),
-        LanguageItem("nag", "Nagamese", "Nagamese", "")
+        LanguageItem("kha", "Khasi", "Ka Ktien Khasi", "")
     )
 
     // Full UI String Translations Dictionary

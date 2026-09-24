@@ -122,6 +122,7 @@ fun SpringboardScreen(
 
     // Persistent cognitive assessment state
     var currentAssessment by remember { mutableStateOf(CognitiveHistoryManager.getLatestAssessment(context)) }
+    var showReportCornerPrompt by remember { mutableStateOf(prefs.getBoolean("show_baseline_popup", false)) }
 
     var isAlarmPopping by remember { mutableStateOf(GameReminderManager.isAlarmFiring(context)) }
     LaunchedEffect(Unit) {
@@ -280,7 +281,79 @@ fun SpringboardScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                            // Corner pop-up asking if the user wants to see the cognitive report
+                            if (showReportCornerPrompt) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = CardDefaults.cardColors(containerColor = CleanWhiteTheme.CardBg),
+                                    border = BorderStroke(1.5.dp, CleanWhiteTheme.OrangePrimary)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.weight(1f),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(text = "🌿", fontSize = 16.sp)
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Column {
+                                                Text(
+                                                    text = "Mind Baseline Ready",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 12.sp,
+                                                    color = CleanWhiteTheme.TextPrimary
+                                                )
+                                                Text(
+                                                    text = "Would you like to view your report?",
+                                                    fontSize = 11.sp,
+                                                    color = CleanWhiteTheme.TextSecondary
+                                                )
+                                            }
+                                        }
+
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            TextButton(
+                                                onClick = {
+                                                    showReportCornerPrompt = false
+                                                    prefs.edit().putBoolean("show_baseline_popup", false).apply()
+                                                    activeDestination = SpringboardDestination.Screening
+                                                },
+                                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                                            ) {
+                                                Text(
+                                                    text = "View",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 12.sp,
+                                                    color = CleanWhiteTheme.OrangePrimary
+                                                )
+                                            }
+                                            IconButton(
+                                                onClick = {
+                                                    showReportCornerPrompt = false
+                                                    prefs.edit().putBoolean("show_baseline_popup", false).apply()
+                                                },
+                                                modifier = Modifier.size(24.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Close,
+                                                    contentDescription = "Dismiss",
+                                                    tint = CleanWhiteTheme.TextMuted,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                            }
 
                             // Insight Timer-inspired Mind Wellness & Roadmap Banner
                             val authPrefs = remember { context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE) }
@@ -532,6 +605,7 @@ fun SpringboardScreen(
 
                 SpringboardDestination.Screening -> {
                     CognitiveScreeningScreen(
+                        initialStage = ScreeningStage.RESULTS_ROADMAP,
                         onComplete = {
                             activeDestination = SpringboardDestination.Home
                         }

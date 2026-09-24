@@ -30,16 +30,10 @@ Unlike overwhelming clinical apps, SMARAN blends **evidence-based clinical neuro
 
 ```mermaid
 flowchart TD
-    A["🕉️ SMARAN Splash\n'Where memories meet care'"] --> B["🌐 Upfront Language Choice\n(10 Regional Indian Languages)"]
-    B --> C["🧠 Gentle Cognitive Baseline Test\n(Standardized Clinical 4-Step Screening)"]
-    C --> D["⏱️ Step 1: Time Orientation\n(Year & Season Check)"]
-    D --> E["📝 Step 2: 3-Word Registration\n(Lotus, River, Sunlight)"]
-    E --> F["🔔 Step 3: Amber Bell Reflex\n(Neural Reaction Latency in ms)"]
-    F --> G["🔍 Step 4: Delayed Word Recall\n(Memory Retrieval)"]
-    G --> H["🌙 Final Check: Rest & Age"]
-    H --> I["Elevate-Style Transition\n'Preparing your results...'"]
-    I --> J["📊 Results & Domain Breakdown Graph\n• MMSE Score (0-30)\n• Cognitive Proficiency Quotient (EPQ)\n• Domain Graph: Memory, Speed, Focus, Agility, Orientation\n• Dynamic Difficulty: Easy / Medium / Difficult\n• Personalized Daily Mind Roadmap"]
-    J --> K["🌿 Enter Smaran Sanctuary\n(All Games & Panels Auto-Calibrated)"]
+    A["🌸 SMARAN Splash & Logo\n'Where memories meet care'"] --> B["🌐 Language Selection\n(English, Hindi, Assamese, Mizo, Khasi)"]
+    B --> C["⚡ 3-4s Rapid Baseline Calibration\n(Neural Reflex & Focus Check)"]
+    C --> D["🌿 Direct Entry to Smaran Sanctuary\n(Instant Access, Zero Unnecessary Delay)"]
+    D --> E["📊 Corner Mind Report Pop-up\n• Optional On-Demand View\n• MMSE Scorecard & Domain Breakdown\n• Personalized Daily Mind Roadmap"]
 ```
 
 ---

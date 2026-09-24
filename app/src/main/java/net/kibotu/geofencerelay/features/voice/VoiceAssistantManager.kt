@@ -5,6 +5,9 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -15,6 +18,7 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,13 +34,11 @@ enum class VoiceState {
 }
 
 /**
- * Universal Voice Assistant Manager coordinating Speech-to-Text and Text-to-Speech.
- * Configured for a soothing, clear, caring doctor / nurse / medical consultant persona:
- * - High-fidelity media audio stream routing (eliminates tinny/hoarse PA horn sound)
- * - Empathetic, composed bedside pace (0.93x rate, 0.98x pitch)
- * - Automatic selection of Google Neural / studio-grade consultant voice
- * - Multilingual support across English, Hindi, Assamese, Mizo, and Khasi
- * - "Hey Smaran" ambient wake word listener
+ * Universal Voice Engine for SMARAN.
+ * Features:
+ * - Natural adult healthcare consultant voice synthesis (Google Studio/Neural TTS)
+ * - Autonomous, continuous "Hey Smaran" ambient wake word listener with self-healing restart
+ * - Multi-dialect STT recognition across 10 Indian languages
  */
 class VoiceAssistantManager private constructor() {
 
@@ -67,14 +69,19 @@ class VoiceAssistantManager private constructor() {
 
     var onWakeWordTriggered: (() -> Unit)? = null
     private var onSpeechResultCallback: ((String) -> Unit)? = null
+    private var onTtsDoneCallback: (() -> Unit)? = null
+
+    private var appContext: Context? = null
+    private var currentLanguageCode: String = "en"
+    private var isWakeWordMonitoring = false
 
     fun initialize(context: Context) {
+        appContext = context.applicationContext
         if (tts == null) {
             val initListener = TextToSpeech.OnInitListener { status ->
                 if (status == TextToSpeech.SUCCESS) {
                     isTtsReady = true
 
-                    // High-fidelity speech attributes (routes through multimedia DAC, eliminating megaphone distortion)
                     try {
                         val audioAttributes = AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
@@ -83,7 +90,6 @@ class VoiceAssistantManager private constructor() {
                         tts?.setAudioAttributes(audioAttributes)
                     } catch (_: Exception) {}
 
-                    // Natural, clear adult consultant tempo & pitch
                     tts?.setSpeechRate(1.0f)
                     tts?.setPitch(1.0f)
 
@@ -98,18 +104,27 @@ class VoiceAssistantManager private constructor() {
                             if (_voiceState.value == VoiceState.SPEAKING) {
                                 _voiceState.value = VoiceState.IDLE
                             }
+                            val cb = onTtsDoneCallback
+                            onTtsDoneCallback = null
+                            scope.launch(Dispatchers.Main) {
+                                cb?.invoke()
+                            }
                         }
 
                         override fun onError(utteranceId: String?) {
                             if (_voiceState.value == VoiceState.SPEAKING) {
                                 _voiceState.value = VoiceState.IDLE
                             }
+                            val cb = onTtsDoneCallback
+                            onTtsDoneCallback = null
+                            scope.launch(Dispatchers.Main) {
+                                cb?.invoke()
+                            }
                         }
                     })
                 }
             }
 
-            // Prefer Google Studio/Neural TTS engine to avoid metallic or low-bitrate AOSP synthesizers
             tts = try {
                 TextToSpeech(context.applicationContext, initListener, "com.google.android.tts")
             } catch (_: Exception) {
@@ -118,45 +133,100 @@ class VoiceAssistantManager private constructor() {
         }
     }
 
-    private fun selectBestConsultantVoice(locale: Locale) {
+    private fun selectBestConsultantVoice(targetLocale: Locale) {
         try {
-            val allVoices = tts?.voices ?: return
-            val matchingVoices = allVoices.filter {
-                it.locale.language.equals(locale.language, ignoreCase = true) &&
-                        !it.features.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED)
-            }
-            if (matchingVoices.isEmpty()) return
+            val voices = tts?.voices ?: return
+            val matchingVoices = voices.filter { it.locale.language == targetLocale.language }
 
-            // Prefer Google neural/wavenet/studio adult voice models; avoid compressed syllable-quantized offline packs
-            val bestVoice = matchingVoices.sortedWith(
-                compareByDescending<Voice> { it.quality }
-                    .thenByDescending {
-                        val name = it.name.lowercase(Locale.ROOT)
-                        when {
-                            name.contains("neural2") -> 12
-                            name.contains("neural") -> 10
-                            name.contains("wavenet") -> 9
-                            name.contains("natural") -> 8
-                            name.contains("network") -> 7
-                            name.contains("premium") -> 6
-                            !name.contains("local") -> 5
-                            else -> 1
-                        }
-                    }
-                    .thenByDescending { it.isNetworkConnectionRequired }
-            ).firstOrNull()
+            val bestVoice: Voice? = matchingVoices.firstOrNull { voice ->
+                val name = voice.name.lowercase(Locale.ROOT)
+                val isNeural = name.contains("wavenet") || name.contains("neural") || name.contains("network")
+                val isWarmFemaleOrMale = name.contains("f0") || name.contains("f1") || name.contains("c0") || name.contains("standard-a")
+                val isGoodQuality = voice.quality >= Voice.QUALITY_HIGH
+                isNeural || (isWarmFemaleOrMale && isGoodQuality)
+            } ?: matchingVoices.firstOrNull { it.quality >= Voice.QUALITY_NORMAL }
+              ?: matchingVoices.firstOrNull()
 
             if (bestVoice != null) {
                 tts?.voice = bestVoice
-                Log.d(tag, "Selected adult consultant voice: ${bestVoice.name}, quality: ${bestVoice.quality}")
+                Log.d(tag, "Selected adult consultant voice: ${bestVoice.name}")
             }
         } catch (e: Exception) {
             Log.e(tag, "Error selecting consultant voice: ${e.message}")
         }
     }
 
+    /**
+     * Starts continuous ambient wake word detection for "Hey Smaran".
+     * Automatically restarts on silence/timeout so it never drops.
+     */
+    fun startWakeWordListening(context: Context, languageCode: String = "en") {
+        appContext = context.applicationContext
+        currentLanguageCode = languageCode
+        _isWakeWordActive.value = true
+        if (isWakeWordMonitoring) return
+        isWakeWordMonitoring = true
+        restartWakeWordLoop()
+    }
+
     fun setWakeWordEnabled(enabled: Boolean) {
-        _isWakeWordActive.value = enabled
+        if (enabled) {
+            val ctx = appContext ?: return
+            startWakeWordListening(ctx, currentLanguageCode)
+        } else {
+            stopWakeWordListening()
+        }
+    }
+
+    fun stopWakeWordListening() {
+        _isWakeWordActive.value = false
+        isWakeWordMonitoring = false
+        cancelListening()
+    }
+
+    private fun restartWakeWordLoop() {
+        val ctx = appContext ?: return
+        if (!_isWakeWordActive.value) return
+        if (_voiceState.value == VoiceState.SPEAKING) return
+
+        scope.launch {
+            delay(250)
+            if (!_isWakeWordActive.value || _voiceState.value == VoiceState.SPEAKING) return@launch
+
+            if (!SpeechRecognizer.isRecognitionAvailable(ctx)) {
+                Log.w(tag, "Speech recognition not available for wake-word loop")
+                return@launch
+            }
+
+            try {
+                speechRecognizer?.destroy()
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(ctx).apply {
+                    setRecognitionListener(createListener())
+                }
+
+                val locale = when (currentLanguageCode) {
+                    "hi" -> Locale("hi", "IN")
+                    "as" -> Locale("as", "IN")
+                    "lus", "kha" -> Locale("en", "IN")
+                    else -> Locale.ENGLISH
+                }
+
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toString())
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, locale.toString())
+                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+                }
+
+                speechRecognizer?.startListening(intent)
+                Log.d(tag, "Ambient wake-word listener active for 'Hey Smaran'...")
+            } catch (e: Exception) {
+                Log.e(tag, "Wake-word loop error: ${e.message}")
+                delay(1200)
+                if (_isWakeWordActive.value) restartWakeWordLoop()
+            }
+        }
     }
 
     fun startListening(
@@ -230,12 +300,12 @@ class VoiceAssistantManager private constructor() {
         onDone: (() -> Unit)? = null
     ) {
         if (text.isBlank()) return
+        onTtsDoneCallback = onDone
         _spokenResponse.value = text
         _voiceState.value = VoiceState.SPEAKING
 
         try {
             if (isTtsReady && tts != null) {
-                // Natural, articulate adult doctor/consultant rate and pitch
                 tts?.setSpeechRate(1.0f)
                 tts?.setPitch(1.0f)
 
@@ -254,9 +324,12 @@ class VoiceAssistantManager private constructor() {
                     putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
                 }
                 tts?.speak(text, TextToSpeech.QUEUE_FLUSH, params, "smaran_voice_response")
+            } else {
+                onDone?.invoke()
             }
         } catch (e: Exception) {
             Log.e(tag, "TTS speak error: ${e.message}")
+            onDone?.invoke()
         }
     }
 
@@ -269,14 +342,53 @@ class VoiceAssistantManager private constructor() {
         } catch (_: Exception) {}
     }
 
+    private fun checkAndTriggerWakeWord(text: String): Boolean {
+        val lower = text.lowercase(Locale.ROOT)
+        val isWake = lower.contains("hey smaran") ||
+                     lower.contains("hello smaran") ||
+                     lower.contains("smaran") ||
+                     lower.contains("स्मरण") ||
+                     lower.contains("হে স্মৰণ") ||
+                     lower.contains("স্মৰণ") ||
+                     lower.contains("hey simran") ||
+                     lower.contains("simran") ||
+                     lower.contains("hey sharan") ||
+                     lower.contains("sharan") ||
+                     lower.contains("hey smart")
+
+        if (isWake) {
+            Log.i(tag, "Wake-word triggered from speech: '$text'")
+            triggerHapticFeedback()
+            onWakeWordTriggered?.invoke()
+            return true
+        }
+        return false
+    }
+
+    private fun triggerHapticFeedback() {
+        try {
+            val ctx = appContext ?: return
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                val vm = ctx.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                vm?.defaultVibrator?.vibrate(VibrationEffect.createOneShot(120, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                val v = ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                @Suppress("DEPRECATION")
+                v?.vibrate(120)
+            }
+        } catch (_: Exception) {}
+    }
+
     private fun createListener() = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
-            _voiceState.value = VoiceState.LISTENING
             _audioRmsLevel.value = 0.1f
         }
 
         override fun onBeginningOfSpeech() {
-            _voiceState.value = VoiceState.LISTENING
+            if (_voiceState.value != VoiceState.SPEAKING) {
+                _voiceState.value = VoiceState.LISTENING
+            }
         }
 
         override fun onRmsChanged(rmsdB: Float) {
@@ -287,40 +399,39 @@ class VoiceAssistantManager private constructor() {
         override fun onBufferReceived(buffer: ByteArray?) {}
 
         override fun onEndOfSpeech() {
-            _voiceState.value = VoiceState.PROCESSING
             _audioRmsLevel.value = 0f
         }
 
         override fun onError(error: Int) {
-            val msg = when (error) {
-                SpeechRecognizer.ERROR_NO_MATCH -> "I couldn't quite hear that. Please speak gently again."
-                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "I'm listening whenever you are ready."
-                SpeechRecognizer.ERROR_AUDIO -> "Microphone issue. Please check settings."
-                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Microphone permission is required."
-                SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network issue with voice recognition."
-                else -> "Speech recognition ended."
-            }
-            Log.w(tag, "Speech recognition error: $error ($msg)")
-            _errorMessage.value = msg
-            _voiceState.value = VoiceState.IDLE
+            Log.d(tag, "Speech recognizer status code: $error")
             _audioRmsLevel.value = 0f
+
+            // If wake word is active and we are not speaking, quietly self-heal and restart loop!
+            if (_isWakeWordActive.value && _voiceState.value != VoiceState.SPEAKING) {
+                restartWakeWordLoop()
+            } else {
+                _voiceState.value = VoiceState.IDLE
+            }
         }
 
         override fun onResults(results: Bundle?) {
-            _voiceState.value = VoiceState.IDLE
             _audioRmsLevel.value = 0f
             val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             val topMatch = matches?.firstOrNull()?.trim() ?: ""
-            if (topMatch.isNotBlank()) {
-                val lower = topMatch.lowercase(Locale.ROOT)
-                // Check if user said wake word
-                if (lower.contains("hey smaran") || lower.contains("hello smaran") || lower.contains("smaran")) {
-                    onWakeWordTriggered?.invoke()
-                }
 
+            if (topMatch.isNotBlank()) {
+                val wasWake = checkAndTriggerWakeWord(topMatch)
                 _transcribedText.value = topMatch
-                Log.d(tag, "Speech recognition match: '$topMatch'")
-                onSpeechResultCallback?.invoke(topMatch)
+                Log.d(tag, "Speech recognition match: '$topMatch' (wake=$wasWake)")
+
+                if (!wasWake) {
+                    onSpeechResultCallback?.invoke(topMatch)
+                    if (_isWakeWordActive.value && _voiceState.value != VoiceState.SPEAKING) {
+                        restartWakeWordLoop()
+                    }
+                }
+            } else if (_isWakeWordActive.value && _voiceState.value != VoiceState.SPEAKING) {
+                restartWakeWordLoop()
             }
         }
 
@@ -329,10 +440,7 @@ class VoiceAssistantManager private constructor() {
             val partial = partials?.firstOrNull()?.trim() ?: ""
             if (partial.isNotBlank()) {
                 _transcribedText.value = partial
-                val lower = partial.lowercase(Locale.ROOT)
-                if (lower.contains("hey smaran") || lower.contains("hello smaran")) {
-                    onWakeWordTriggered?.invoke()
-                }
+                checkAndTriggerWakeWord(partial)
             }
         }
 
@@ -341,6 +449,7 @@ class VoiceAssistantManager private constructor() {
 
     fun shutdown() {
         try {
+            stopWakeWordListening()
             speechRecognizer?.destroy()
             speechRecognizer = null
             tts?.stop()
